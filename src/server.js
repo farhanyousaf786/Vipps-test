@@ -45,11 +45,12 @@ app.use((req, res, next) => {
   next();
 });
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('\n=== Server Started Successfully ===');
   console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log('\nPress Ctrl+C to stop the server\n');
+  console.log('Listening on all network interfaces (0.0.0.0)');
 });
 
 // Handle server errors
