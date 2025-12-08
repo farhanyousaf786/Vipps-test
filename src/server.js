@@ -8,8 +8,25 @@ console.log('\n=== Vipps Login Test Backend ===');
 console.log('Environment:', process.env.NODE_ENV || 'development');
 console.log('Server starting...\n');
 
-// Log environment variables (without sensitive data)
-console.log('Configuration:');
+// Debug: Log all relevant environment variables
+console.log('=== Environment Variables ===');
+const envVars = [
+  'NODE_ENV',
+  'PORT',
+  'VIPPS_CLIENT_ID',
+  'VIPPS_OCP_APIM_SUBSCRIPTION_KEY',
+  'VIPPS_API_URL',
+  'VIPPS_REDIRECT_URI',
+  'VIPPS_MERCHANT_SERIAL_NUMBER'
+];
+
+envVars.forEach(varName => {
+  const value = process.env[varName];
+  const displayValue = value ? (varName.includes('KEY') ? '***' + value.slice(-4) : value) : 'Not Set';
+  console.log(`${varName}: ${displayValue}`);
+});
+
+console.log('\nConfiguration:');
 console.log(`- Port: ${PORT}`);
 console.log(`- NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 console.log(`- Vipps Client ID: ${process.env.VIPPS_CLIENT_ID ? '✓ Set' : '✗ Missing'}`);
