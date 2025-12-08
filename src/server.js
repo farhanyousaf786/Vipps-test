@@ -37,14 +37,6 @@ console.log(`2. Start Vipps Login: http://localhost:${PORT}/auth/vipps/login`);
 console.log(`3. Session Check: http://localhost:${PORT}/auth/session/:sessionId`);
 console.log('\n=== Server Logs ===');
 
-// Add request logging middleware
-app.use((req, res, next) => {
-  const timestamp = new Date().toISOString();
-  const logMessage = `[${timestamp}] ${req.method} ${req.originalUrl}`;
-  console.log(logMessage);
-  next();
-});
-
 const server = app.listen(PORT, '0.0.0.0', () => {
   console.log('\n=== Server Started Successfully ===');
   console.log(`Server running on port ${PORT}`);
