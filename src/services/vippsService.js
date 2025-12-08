@@ -1,6 +1,27 @@
 const axios = require('axios');
 const { createVippsAuthHeader } = require('../utils/helpers');
 
+// Debug: Log all relevant environment variables
+console.log('\n=== Vipps Service Debug ===');
+console.log('Environment Variables Loaded:');
+const envVars = [
+  'NODE_ENV',
+  'VIPPS_API_URL',
+  'VIPPS_CLIENT_ID',
+  'VIPPS_CLIENT_SECRET',
+  'VIPPS_REDIRECT_URI',
+  'VIPPS_MERCHANT_SERIAL_NUMBER',
+  'VIPPS_OCP_APIM_SUBSCRIPTION_KEY',
+  'VIPPS_OCP_APIM_SUBSCRIPTION_KEY_SECONDARY'
+];
+
+envVars.forEach(varName => {
+  const value = process.env[varName];
+  const displayValue = value ? (varName.includes('KEY') || varName.includes('SECRET') ? '***' + value.slice(-4) : value) : '❌ Not Set';
+  console.log(`  ${varName}: ${displayValue}`);
+});
+console.log('==========================\n');
+
 const {
   VIPPS_API_URL,
   VIPPS_CLIENT_ID,
@@ -21,7 +42,12 @@ const VIPPS_HEADERS = {
 };
 
 function getAuthorizationUrl(state) {
+  console.log('\n=== Generating Authorization URL ===');
+  console.log('Input state:', state);
+  
   const baseUrl = `${VIPPS_API_URL}/access-management-1.0/access/oauth2/auth`;
+  console.log('Base URL:', baseUrl);
+  
   const params = new URLSearchParams({
     client_id: VIPPS_CLIENT_ID,
     response_type: 'code',
@@ -30,7 +56,11 @@ function getAuthorizationUrl(state) {
     redirect_uri: VIPPS_REDIRECT_URI
   });
 
-  return `${baseUrl}?${params.toString()}`;
+  const authUrl = `${baseUrl}?${params.toString()}`;
+  console.log('Generated Auth URL:', authUrl);
+  console.log('==============================\n');
+  
+  return authUrl;
 }
 
 async function exchangeCodeForTokens(code) {
