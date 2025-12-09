@@ -23,7 +23,6 @@ This is a test project for Vipps Login OAuth 2.0 authentication. It provides a b
    - `VIPPS_CLIENT_ID` - Your Vipps client ID
    - `VIPPS_CLIENT_SECRET` - Your Vipps client secret
    - `VIPPS_SUBSCRIPTION_KEY` - Your Vipps subscription key
-   - `VIPPS_MERCHANT_SERIAL_NUMBER` - Your merchant serial number
    - `VIPPS_REDIRECT_URI` - Must match the redirect URI configured in Vipps portal
    - `APP_REDIRECT_SCHEME` - Your app's URL scheme for deep linking
    - `JWT_SECRET` - A random secret key for JWT token signing
@@ -61,7 +60,6 @@ npm start
 - `VIPPS_CLIENT_ID` - Vipps client ID
 - `VIPPS_CLIENT_SECRET` - Vipps client secret
 - `VIPPS_SUBSCRIPTION_KEY` - Vipps subscription key
-- `VIPPS_MERCHANT_SERIAL_NUMBER` - Vipps merchant serial number
 - `VIPPS_REDIRECT_URI` - Callback URL for Vipps OAuth flow
 
 ## Security
