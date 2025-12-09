@@ -17,6 +17,7 @@ const envVars = [
   'VIPPS_OCP_APIM_SUBSCRIPTION_KEY',
   'VIPPS_API_URL',
   'VIPPS_REDIRECT_URI',
+  'VIPPS_MERCHANT_SERIAL_NUMBER',
 ];
 
 envVars.forEach(varName => {

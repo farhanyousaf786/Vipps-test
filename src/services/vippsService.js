@@ -11,7 +11,8 @@ const envVars = [
   'VIPPS_CLIENT_SECRET',
   'VIPPS_REDIRECT_URI',
   'VIPPS_OCP_APIM_SUBSCRIPTION_KEY',
-  'VIPPS_OCP_APIM_SUBSCRIPTION_KEY_SECONDARY'
+  'VIPPS_OCP_APIM_SUBSCRIPTION_KEY_SECONDARY',
+  'VIPPS_MERCHANT_SERIAL_NUMBER'
 ];
 
 envVars.forEach(varName => {
@@ -26,7 +27,8 @@ const {
   VIPPS_CLIENT_ID,
   VIPPS_CLIENT_SECRET,
   VIPPS_REDIRECT_URI,
-  VIPPS_OCP_APIM_SUBSCRIPTION_KEY
+  VIPPS_OCP_APIM_SUBSCRIPTION_KEY,
+  VIPPS_MERCHANT_SERIAL_NUMBER
 } = process.env;
 
 const VIPPS_SUBSCRIPTION_KEY = VIPPS_OCP_APIM_SUBSCRIPTION_KEY;
@@ -35,7 +37,9 @@ const VIPPS_HEADERS = {
   'Vipps-System-Name': 'vipps-login-test-app',
   'Vipps-System-Version': '1.0.0',
   'Vipps-System-Plugin-Name': 'express-backend',
-  'Vipps-System-Plugin-Version': '1.0.0'
+  'Vipps-System-Plugin-Version': '1.0.0',
+  // Include merchant serial number on all Vipps requests
+  'Merchant-Serial-Number': VIPPS_MERCHANT_SERIAL_NUMBER
 };
 
 function getAuthorizationUrl(state) {
