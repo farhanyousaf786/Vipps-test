@@ -33,6 +33,12 @@ const {
 
 const VIPPS_SUBSCRIPTION_KEY = VIPPS_OCP_APIM_SUBSCRIPTION_KEY;
 
+// Validate critical environment variables
+if (!VIPPS_CLIENT_SECRET) {
+  console.error('❌ CRITICAL: VIPPS_CLIENT_SECRET is not set!');
+  throw new Error('VIPPS_CLIENT_SECRET environment variable is required');
+}
+
 const VIPPS_HEADERS = {
   'Vipps-System-Name': 'vipps-login-test-app',
   'Vipps-System-Version': '1.0.0',
@@ -66,11 +72,15 @@ function getAuthorizationUrl(state) {
 
 async function exchangeCodeForTokens(code) {
   try {
+    console.log('\n=== Exchanging Code for Tokens ===');
+    console.log('Code:', code ? code.substring(0, 20) + '...' : 'MISSING');
+    
     const url = `${VIPPS_API_URL}/access-management-1.0/access/oauth2/token`;
     const headers = {
       ...VIPPS_HEADERS,
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: createVippsAuthHeader(VIPPS_CLIENT_ID, VIPPS_CLIENT_SECRET)
+      Authorization: createVippsAuthHeader(VIPPS_CLIENT_ID, VIPPS_CLIENT_SECRET),
+      'Ocp-Apim-Subscription-Key': VIPPS_SUBSCRIPTION_KEY
     };
 
     const body = new URLSearchParams({
@@ -79,10 +89,24 @@ async function exchangeCodeForTokens(code) {
       redirect_uri: VIPPS_REDIRECT_URI
     });
 
+    console.log('Token Exchange URL:', url);
+    console.log('Redirect URI:', VIPPS_REDIRECT_URI);
+    console.log('Client ID:', VIPPS_CLIENT_ID);
+    console.log('Subscription Key:', VIPPS_SUBSCRIPTION_KEY ? '***' + VIPPS_SUBSCRIPTION_KEY.slice(-4) : 'MISSING');
+
     const response = await axios.post(url, body, { headers });
+    console.log('✓ Token exchange successful');
+    console.log('==============================\n');
     return response.data;
   } catch (error) {
-    throw new Error(`Failed to exchange code for tokens: ${error.message}`);
+    console.error('\n❌ Token exchange failed');
+    console.error('Status:', error.response?.status);
+    console.error('Error Data:', JSON.stringify(error.response?.data, null, 2));
+    console.error('Error Message:', error.message);
+    console.error('==============================\n');
+    
+    const errorMsg = error.response?.data?.error_description || error.response?.data?.error || error.message;
+    throw new Error(`Failed to exchange code for tokens: ${errorMsg}`);
   }
 }
 
