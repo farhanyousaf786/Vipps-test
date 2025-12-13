@@ -31,6 +31,21 @@ router.get('/vipps/login', (req, res) => {
   }
 });
 
+// DEBUG: Log ALL requests to callback for troubleshooting
+router.use('/vipps/callback', (req, res, next) => {
+  console.log('\n=== CALLBACK REQUEST RECEIVED ===');
+  console.log('Method:', req.method);
+  console.log('URL:', req.originalUrl);
+  console.log('Query:', req.query);
+  console.log('Headers:', {
+    'user-agent': req.get('user-agent'),
+    'referer': req.get('referer'),
+    'host': req.get('host')
+  });
+  console.log('================================\n');
+  next();
+});
+
 router.get('/vipps/callback', async (req, res) => {
   const { code, state, error, error_description } = req.query;
 
