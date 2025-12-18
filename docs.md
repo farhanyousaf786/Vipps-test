@@ -55,6 +55,26 @@ Content-Type: application/json
 
 ---
 
+### 4. Sign out
+```
+POST https://vipps-test-production.up.railway.app/auth/signout
+Content-Type: application/json
+
+{
+  "sessionId": "abc-123-xyz"
+}
+```
+**Returns:**
+```json
+{
+  "success": true,
+  "message": "Signed out"
+}
+```
+**Note:** This deletes the server-side in-memory session. If your app stores the JWT from `/auth/vipps/session`, delete it locally too.
+
+---
+
 ## Testing Flow
 
 1. **Call** `/auth/vipps/login` → Get `authUrl` and `sessionId`
