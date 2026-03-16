@@ -10,6 +10,7 @@ const envVars = [
   'VIPPS_CLIENT_ID',
   'VIPPS_CLIENT_SECRET',
   'VIPPS_REDIRECT_URI',
+  'VIPPS_APP_CALLBACK_URI',
   'VIPPS_OCP_APIM_SUBSCRIPTION_KEY',
   'VIPPS_OCP_APIM_SUBSCRIPTION_KEY_SECONDARY',
   'VIPPS_MERCHANT_SERIAL_NUMBER'
@@ -27,6 +28,7 @@ const {
   VIPPS_CLIENT_ID,
   VIPPS_CLIENT_SECRET,
   VIPPS_REDIRECT_URI,
+  VIPPS_APP_CALLBACK_URI,
   VIPPS_OCP_APIM_SUBSCRIPTION_KEY,
   VIPPS_MERCHANT_SERIAL_NUMBER
 } = process.env;
@@ -56,13 +58,19 @@ function getAuthorizationUrl(state) {
   const baseUrl = `${VIPPS_API_URL}/access-management-1.0/access/oauth2/auth`;
   console.log('Base URL:', baseUrl);
   
-  const params = new URLSearchParams({
+  const paramsObject = {
     client_id: VIPPS_CLIENT_ID,
     response_type: 'code',
     scope: 'openid name phoneNumber email address birthDate',
     state,
     redirect_uri: VIPPS_REDIRECT_URI
-  });
+  };
+
+  if (VIPPS_APP_CALLBACK_URI) {
+    paramsObject.app_callback_uri = VIPPS_APP_CALLBACK_URI;
+  }
+
+  const params = new URLSearchParams(paramsObject);
 
   const authUrl = `${baseUrl}?${params.toString()}`;
   console.log('Generated Auth URL:', authUrl);
