@@ -35,6 +35,16 @@ const {
 
 const VIPPS_SUBSCRIPTION_KEY = VIPPS_OCP_APIM_SUBSCRIPTION_KEY;
 
+function normalizeUriScheme(uri) {
+  if (!uri || typeof uri !== 'string') return uri;
+  const match = uri.match(/^([A-Za-z][A-Za-z0-9+.-]*):\/\//);
+  if (!match) return uri;
+  const scheme = match[1];
+  const lower = scheme.toLowerCase();
+  if (scheme === lower) return uri;
+  return `${lower}://${uri.slice(match[0].length)}`;
+}
+
 // Validate critical environment variables
 if (!VIPPS_CLIENT_SECRET) {
   console.error('❌ CRITICAL: VIPPS_CLIENT_SECRET is not set!');
@@ -67,7 +77,9 @@ function getAuthorizationUrl(state) {
   };
 
   if (VIPPS_APP_CALLBACK_URI) {
-    paramsObject.app_callback_uri = VIPPS_APP_CALLBACK_URI;
+    paramsObject.app_callback_uri = normalizeUriScheme(VIPPS_APP_CALLBACK_URI);
+  } else if (process.env.APP_URL) {
+    paramsObject.app_callback_uri = `${process.env.APP_URL.replace(/\/$/, '')}/auth/vipps/app-callback`;
   }
 
   const params = new URLSearchParams(paramsObject);

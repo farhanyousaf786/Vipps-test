@@ -16,7 +16,30 @@ const {
 
 const { JWT_SECRET, APP_REDIRECT_SCHEME } = process.env;
 
+function normalizeScheme(scheme) {
+  if (!scheme || typeof scheme !== 'string') return scheme;
+  return scheme.toLowerCase();
+}
+
 const router = express.Router();
+
+router.get('/vipps/app-callback', (req, res) => {
+  const scheme = normalizeScheme(APP_REDIRECT_SCHEME);
+
+  const params = new URLSearchParams();
+  Object.entries(req.query || {}).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (Array.isArray(value)) {
+      value.forEach(v => params.append(key, String(v)));
+      return;
+    }
+    params.append(key, String(value));
+  });
+
+  const qs = params.toString();
+  const redirectUrl = qs ? `${scheme}://auth/callback?${qs}` : `${scheme}://auth/callback`;
+  return res.redirect(redirectUrl);
+});
 
 router.get('/vipps/login', (req, res) => {
   try {
@@ -58,20 +81,20 @@ router.get('/vipps/callback', async (req, res) => {
   try {
     if (error) {
       console.log('Error from Vipps:', error_description || error);
-      const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=false&error=${encodeURIComponent(error_description || error)}`;
+      const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=false&error=${encodeURIComponent(error_description || error)}`;
       console.log('Redirecting to app with error:', redirectUrl);
       return res.redirect(redirectUrl);
     }
 
     if (!code) {
       console.error('❌ Missing authorization code');
-      const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=false&error=${encodeURIComponent('Missing authorization code')}`;
+      const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=false&error=${encodeURIComponent('Missing authorization code')}`;
       return res.redirect(redirectUrl);
     }
 
     if (!state) {
       console.error('❌ Missing state parameter');
-      const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=false&error=${encodeURIComponent('Missing state parameter')}`;
+      const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=false&error=${encodeURIComponent('Missing state parameter')}`;
       return res.redirect(redirectUrl);
     }
 
@@ -80,7 +103,7 @@ router.get('/vipps/callback', async (req, res) => {
 
     if (!session) {
       console.error('❌ Invalid or expired state:', state);
-      const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=false&error=${encodeURIComponent('Invalid or expired state')}`;
+      const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=false&error=${encodeURIComponent('Invalid or expired state')}`;
       return res.redirect(redirectUrl);
     }
 
@@ -99,7 +122,7 @@ router.get('/vipps/callback', async (req, res) => {
     });
     console.log('✓ Session updated with user data');
 
-    const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=true&sessionId=${session.id}`;
+    const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=true&sessionId=${session.id}`;
     console.log('Redirecting to app:', redirectUrl);
     console.log('=== CALLBACK COMPLETE ===\n');
     res.redirect(redirectUrl);
@@ -107,7 +130,7 @@ router.get('/vipps/callback', async (req, res) => {
     console.error('❌ Vipps callback error:', err.message);
     console.error('Stack:', err.stack);
     const safeError = process.env.NODE_ENV === 'development' ? err.message : 'Authentication failed';
-    const redirectUrl = `${APP_REDIRECT_SCHEME}://auth/callback?success=false&error=${encodeURIComponent(safeError)}`;
+    const redirectUrl = `${normalizeScheme(APP_REDIRECT_SCHEME)}://auth/callback?success=false&error=${encodeURIComponent(safeError)}`;
     console.log('Redirecting to app with error:', redirectUrl);
     res.redirect(redirectUrl);
   }
